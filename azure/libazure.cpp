@@ -952,7 +952,7 @@ static bool deleteTheFile (const std::string container,
            }
         } catch ( const irods::exception& e) {
            irods::log( irods::error(e) );
-           result = ERROR( SYS_INVALID_INPUT_PARAM, e.what());
+           result = ERROR( UNIV_MSS_SYNCTOARCH_ERR, e.what());
         }
 
         return result;
