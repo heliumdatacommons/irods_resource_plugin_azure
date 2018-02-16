@@ -10,13 +10,19 @@ And two Microsoft specific libraries. We have forks of these libraries on the he
 
 	- git clone https://github.com/heliumdatacommons/cpprestsdk.git
 
-The azure storage lib requires version 2.9.1 of cpprest.  In order to get the required version, including the changes needed to build a version of the library compatible with the azure resource plugin, you need to switch to the 2.9.1-helium branch of these library.  To do this the commands are:
+The azure storage lib requires version 2.9.1 of cpprest.  In order to get the required version build a version of the library compatible with the azure resource plugin, you need to switch to the 2.9.1 branch of this library.  To do this the commands are:
 
 	- git checkout 2.9.1-helium
 
  - azurestorage: you can get the code for this library with the command
 	
 	-  git clone https://github.com/heliumdatacommons/azure-storage-cpp.git
+
+You'll also need the irods resource plugin azure wrapper,  This is a piece of code that isolates the
+azure storage lib from all of the other code it calls, allowing us to use g++ versions of all the
+system libraries, with irods and it's development tools, which are built using clang
+
+   - git clone https://github.com/heliumdatacommons/irods_resource_plugin_azure_wrapper.git
 
 Plus a set of more or less standard linux libraries that seem to be required by cpprest and azurestorarage
 
@@ -36,6 +42,8 @@ Plus a set of more or less standard linux libraries that seem to be required by 
 
  - libxml++-dev[el]
 
+ - and all the boost libs
+
 Once you have the prereqs installed you can make the azure resource plugin as follows:
 
 # Build lib cpprest
@@ -52,7 +60,7 @@ mkdir build.release
 cd build.release
 
 # Run cmake
-/opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DCMAKE_COMPILE_FOR_IRODS:BOOL=on -DBOOST_ROOT:STRING=/opt/irods-externals/boost1.60.0-0/
+/opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DBOOST_ROOT:STRING=/opt/irods-externals/boost1.60.0-0/
 
 # Build libccprest
 make cpprest
@@ -78,7 +86,7 @@ mkdir build.release
 cd build.release
 
 # Run cmake:  Set CASABLANCA_DIR to yourrootdir
-CASABLANCA_DIR=/yourrootdir /opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DCMAKE_COMPILE_FOR_IRODS:BOOL=on
+CASABLANCA_DIR=/yourrootdir /opt/irods-externals/cmake3.5.2-0/bin/cmake .. 
 
 # Make the library: ignore the compile warnings
 make azurestorage
@@ -94,6 +102,17 @@ lrwxrwxrwx 1 root root  22 Jan 31 15:33 /usr/local/lib/libazurestorage.so.3 -> l
 
 -rwxr-xr-x 1 root root 21M Jan 31 15:54 /usr/local/lib/libazurestorage.so.3.1*
 
+# Build the azure storage plugin wrapper
+git clone https://github.com/heliumdatacommons/irods_resource_plugin_azure_wrapper.git
+
+cd irods_resource_plugin_azure_wrapper
+
+mkdir build.release
+
+cd build.release
+
+/opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DAZURE_EXTERNALS_LIBDIR:STRING=/location/of/azureandcpprestlibs -DBOOST_ROOT:STRING=/location-of-boost-directory
+
 # Build the azure storage plugin
 git clone https://github.com/heliumdatacommons/irods_resource_plugin_azure.git
 
@@ -103,7 +122,7 @@ mkdir build.release
 
 cd build.release
 
-/opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DCRYPTO_LIBDIR:STRING=/usr/lib64
+/opt/irods-externals/cmake3.5.2-0/bin/cmake .. -DCRYPTO_LIBDIR:STRING=/usr/lib64 -DAZURE_WRAPPER_DIR:STRING=/location-of-wrapper-lib
 
 make package
 

@@ -84,6 +84,21 @@ class Test_Compound_with_AZURE_Resource(resource_suite.ResourceSuite, ChunkyDevT
 
         self.admin.assert_icommand('itrim -N1 -n0 '+filename, 'STDOUT_SINGLELINE', 'Number of files trimmed')
 
+    def test_stage_to_cache(self):
+        self.admin.assert_icommand("iadmin modresc demoResc context \"auto_repl=on\"" )
+
+        filename = "test_stage_to_cache_file.txt"
+        filepath = lib.create_local_testfile(filename)
+        self.admin.assert_icommand("iput " + filename)
+
+        self.admin.assert_icommand("itrim -N 1 -n 0 " + filename, 'STDOUT_SINGLELINE', "files trimmed")
+
+        self.admin.assert_icommand("ils -L " + filename, 'STDOUT_SINGLELINE', 'archiveResc' )
+
+        self.admin.assert_icommand("iget -f " + filename)
+
+        self.admin.assert_icommand("ils -L " + filename, 'STDOUT_SINGLELINE', 'cacheResc')
+
     def test_empty_files(self):
         # set up
         filename = "some_test_file.txt"
@@ -120,29 +135,6 @@ class Test_Compound_with_AZURE_Resource(resource_suite.ResourceSuite, ChunkyDevT
         # clean up
         self.admin.assert_icommand("iadmin modresc archiveResc context AZURE_ACCOUNT_FILE=/etc/irods/azure_account.txt")
         os.remove(filepath)
-
-    def test_retry_for_get(self):
-        # set up
-        filename = "some_test_file.txt"
-        filepath = lib.create_local_testfile(filename)
-        self.admin.assert_icommand("iput "+filepath )
-        self.admin.assert_icommand("ils -l", 'STDOUT_SINGLELINE', "tempZone")
-        self.admin.assert_icommand("itrim -N1 -n0 "+filename, 'STDOUT_SINGLELINE', "files trimmed")
-        self.admin.assert_icommand("ils -l", 'STDOUT_SINGLELINE', "tempZone")
-        self.admin.assert_icommand("iadmin modresc archiveResc context AZURE_ACCOUNT_FILE=/etc/irods/azure_account.txt;retry_count=2;connect_timeout=5")
-
-        # test it
-        self.admin.assert_icommand( "iget -f "+filename, 'STDERR_SINGLELINE', "HIERARCHY_ERROR")
-
-        # verify it
-        p = subprocess.Popen(['grep "UNIV_MSS_SYNCTOARCH_ERR"  ../log/rodsLog.* '], shell=True, stdout=subprocess.PIPE)
-        result = p.communicate()[0]
-        assert -1 != result.find( "UNIV_MSS_SYNCTOARCH_ERR" )
-
-        # clean up
-        self.admin.assert_icommand("iadmin modresc archiveResc context AZURE_ACCOUNT_FILE=/etc/irods/azure_account.txt")
-        os.remove(filepath)
-
 
     def test_irm_specific_replica(self):
         self.admin.assert_icommand("ils -L "+self.testfile,'STDOUT_SINGLELINE',self.testfile) # should be listed

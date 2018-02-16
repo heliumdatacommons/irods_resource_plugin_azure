@@ -26,7 +26,6 @@
 #include <was/blob.h>
 #include <cpprest/filestream.h>
 #include <cpprest/containerstream.h>
-#include "libazure.hpp"
 
 #define AZURE_ACCOUNT "AZURE_ACCOUNT"
 #define AZURE_ACCOUNT_KEY "AZURE_ACCOUNT_KEY"
@@ -34,29 +33,4 @@
 #define AZURE_ACCOUNT_FILE "AZURE_ACCOUNT_FILE"
 #define MAX_ACCOUNT_SIZE  256
 #define MAX_ACCOUNT_KEY_SIZE  256
-
-extern "C" {
-
-static irods::error putTheFile(
-    utility::string_t       connection,
-    const char*             complete_file_path,
-    const std::string       file_name,
-    const char*             prev_physical_path,
-    const std::string       container,
-    irods::plugin_context& _ctx);
-
-static bool getTheFile(
-    std::string       container,
-    std::string       file_name,
-    utility::string_t connection,
-    const char       *destination,
-    int               mode);
-
-static bool
-getTheFileStatus (const std::string container, const std::string file,  const utility::string_t connection);
-
-static bool deleteTheFile (const std::string container, const std::string file,  const utility::string_t connection);
-
-
-}; // extern "C" 
 #endif

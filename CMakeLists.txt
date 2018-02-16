@@ -65,8 +65,10 @@ add_compile_options(-nostdinc++ -Wall -Wextra -Werror)
 add_compile_options(-Wno-unused-parameter) # Until fix of irods_re_plugin.hpp
 add_compile_options(-Wno-unneeded-internal-declaration) # Until fix of https://github.com/irods/irods/issues/3396
 link_libraries(c++abi
-               ${IRODS_EXTERNALS_PACKAGE_ROOT}/jansson2.7-0/lib/libjansson.so)
+               ${IRODS_EXTERNALS_PACKAGE_ROOT}/jansson2.7-0/lib/libjansson.so
+               ${AZURE_WRAPPER_DIR}/lib/libazure_wrapper.so)
 include_directories(${IRODS_EXTERNALS_FULLPATH_CLANG}/include/c++/v1
+                    ${AZURE_WRAPPER_DIR}/include
                     ${IRODS_EXTERNALS_PACKAGE_ROOT}/jansson2.7-0/include)
 
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
