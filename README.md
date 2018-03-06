@@ -143,6 +143,20 @@ The azure infrastructure will create host names that are longer than the 64 char
 
 This change has been submitted as a pull request to the iRODS team.
 
+Here's a better work around that seems to fix the problems:
+- Step one: assign a shorter, more reasonable hostname for the azure client. Follow this link to explain how to do this: 
+
+<pre><code>
+https://docs.microsoft.com/en-us/azure/virtual-machines/linux/portal-create-fqdn
+</code></pre>
+
+- Step two: Once you've got your new hostname, make sure the host uses it with the command
+
+<pre><code>
+sudo hostnamectl set-hostname new-host-name
+hostname
+</code></pre>
+
 - Check the hostname entry in the .irods/irods_environment.json file. Make sure the "irods-host" value is the same as the value of the hostname command in the shell.
 
 - If you have a client machine to connect with an iRODS server running on azure, you will need to add an entry in /etc/hosts mapping the fully qualified domain name (longer than the iRODS max) to a shorter name. Note that this strategy has it's downside, in that the IP address of a machine inside the Azure cloud can change when the VM is restarted.  The implication is that production Azure machines should probably be configured with static IP addresses.
